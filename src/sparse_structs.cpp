@@ -4,12 +4,12 @@
 namespace craph {
 
 void Print(CSgraph g){
-        std::cout << "row_offsets: ";
+        std::cout << "Offsets: ";
         for (int r : g.offsets) std::cout << r << " ";
-        std::cout << "\ncol_indices: ";
+        std::cout << "\nIndices: ";
         for (int c : g.indices) std::cout << c << " ";
         if (g.weighted) {
-            std::cout << "\nvalues: ";
+            std::cout << "\nValues: ";
             for (float w : g.values) std::cout << w << " ";
         }
         std::cout << "\n";
@@ -81,25 +81,82 @@ CSgraph CSR::migrate(std::ifstream& file) {
     return {row_offsets, col_indices, values, weighted};
 }
 
-// class CSC{
-//     public:
-//     CSC(std::string &path_to_file,bool &is_weighted){
+CSC::CSC(std::string &path_to_file,bool &is_weighted):path_to_file(path_to_file),is_weighted(is_weighted){
+    std::ifstream file(path_to_file);
+    if (!file.is_open()) {
+        std::cerr << "Failed to open file: " << path_to_file << "\n";
+        return;
+    }
+    g = migrate(file);
 
-//     }
 
-//     private:
-//     std::string path_to_file;
-//     bool is_weighted;
-//     CSgraph g;
-// };
+}
+const CSgraph& CSC::GetGraph() const {
+    return g;
+}
+
+CSgraph CSC::migrate(std::ifstream &file){
+    std::string line;
+    std::vector<int> out_degrees;
+
+    int max_node=0;
+    int sparseCount=0;
+    while(std::getline(file,line)){
+        if(line.empty()){
+            continue;
+        }
+        std::istringstream iss(line);
+        int src,dst;
+        float weight;
+        iss>>src>>dst;
+        max_node=std::max(max_node,std::max(src,dst));
+        sparseCount++;
+        if(out_degrees.size()<=dst){
+            out_degrees.resize(dst+1,0);
+        }
+        out_degrees[dst]++;
+    }
+    std::vector<int> inScan(max_node+1,0);
+    std::vector<int> col_offsets(max_node+2,0);
+    std::vector<int> row_indices(sparseCount,0);
+    std::vector<float> values(sparseCount,0);
+    for(int i=1;i<=max_node;i++){
+        inScan[i]=inScan[i-1]+out_degrees[i-1];
+        col_offsets[i+1]=col_offsets[i]+(i < out_degrees.size() ? out_degrees[i] : 0);
+    }
+    file.clear();
+    file.seekg(0);
+
+    while(std::getline(file,line)){
+        if(line.empty()){
+            continue;
+        }
+        std::istringstream iss(line);
+        int src,dst;
+        float weight;
+        if(is_weighted){
+            iss>>src>>dst>>weight;
+        }
+        else{
+            iss>>src>>dst;
+        }
+        
+        row_indices[inScan[dst]]=src;
+        if(is_weighted){
+            values[inScan[dst]]=weight;
+        }
+        inScan[dst]++;
+    }
+    return {col_offsets,row_indices,values,is_weighted};
+}
 
 }  // namespace craph
 
 int main() {
     std::string file_path = "graph.txt";  // Change to your actual file
-    bool is_weighted = false;
+    bool is_weighted = true;
 
-    craph::CSR tr(file_path, is_weighted);
+    craph::CSC tr(file_path, is_weighted);
 
     Print(tr.GetGraph());
 
