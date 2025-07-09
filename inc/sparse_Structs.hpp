@@ -10,9 +10,6 @@
 
 namespace craph {
 
-// Utility print function for global graph `g`
-
-
 //struct to store SPARSE format 
 struct CSgraph{
     std::vector<int> offsets;
@@ -21,32 +18,47 @@ struct CSgraph{
     bool weighted = false;
 };
 
-void Print(CSgraph &g);
-
-// CSR (Compressed Sparse Row) class
-class CSR {
+// Base class for all sparse matrix formats
+class SparseMatrix {
 public:
-    CSR(const std::string& path_to_file, bool is_weighted = false);
-    void Print() const;
+    SparseMatrix(const std::string& path_to_file, bool is_weighted = false);
+    virtual ~SparseMatrix() = default;
+    
     const CSgraph& GetGraph() const;
+    void Print() const; // Common print function for all formats
 
-private:
+protected:
     std::string path_to_file;
     bool weighted;
     CSgraph g;
-
-    CSgraph migrate(std::ifstream& file);
+    
+    virtual CSgraph migrate(std::ifstream& file) = 0; // Pure virtual function
 };
 
-// CSC (Compressed Sparse Column) class - stub
-class CSC {
+// CSR (Compressed Sparse Row) class
+class CSR : public SparseMatrix {
 public:
-    CSC(std::string& path_to_file, bool& is_weighted);
-
+    CSR(const std::string& path_to_file, bool is_weighted = false);
+   
 private:
-    std::string path_to_file;
-    bool is_weighted;
-    CSgraph g;
+    CSgraph migrate(std::ifstream& file) override;
+};
+
+// CSC (Compressed Sparse Column) class 
+class CSC : public SparseMatrix {
+public:
+    CSC(const std::string& path_to_file, bool is_weighted = false);
+    
+private:
+    CSgraph migrate(std::ifstream& file) override;
+};
+
+class COO : public SparseMatrix {
+public:
+    COO(const std::string& path_to_file, bool is_weighted = false);
+    
+private:
+    CSgraph migrate(std::ifstream& file) override;   
 };
 
 }  // namespace craph
