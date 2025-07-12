@@ -25,6 +25,6 @@ int main() {
     matrix->Print();
     delete matrix;
     
-    std::cout << "\n✅ All tests completed!" << std::endl;
+    std::cout << " All tests completed!" << std::endl;
     return 0;
 } 
