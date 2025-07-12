@@ -5,7 +5,7 @@ int main() {
     std::cout << "Simple Sparse Matrix Test" << std::endl;
     std::cout << "=========================" << std::endl;
     
-    std::string file_path = "../src/graph.txt";
+    std::string file_path = "graph.txt";
     bool is_weighted = true;
     
     std::cout << "\n1. Testing CSR Format:" << std::endl;
