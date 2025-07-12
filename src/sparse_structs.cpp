@@ -10,6 +10,10 @@ void SparseMatrix::Print() const {
         std::cout << "\nValues: ";
         for (float w : g.values) std::cout << w << " ";
     }
+    std::cout<<std::endl;
+    std::cout<<"Number of vertices are "<<numVertices<<std::endl;
+    std::cout<<"Number of edges are "<<numEdges<<std::endl;
+
     std::cout << "\n";
 }
 
@@ -45,6 +49,8 @@ CSgraph CSR::migrate(std::ifstream& file) {
 
         iss >> src >> dst;
         max_node = std::max(max_node, std::max(src, dst)); 
+        mapping.insert(src);
+        mapping.insert(dst);
         if (out_degrees.size() <= src)
             out_degrees.resize(src + 1, 0);
         ++out_degrees[src];
@@ -78,7 +84,8 @@ CSgraph CSR::migrate(std::ifstream& file) {
             values[pos] = weight;
         }
     }
-
+    numVertices=mapping.size();
+    numEdges=col_indices.size();
     return {row_offsets, col_indices, values, weighted};
 }
 
@@ -106,8 +113,11 @@ CSgraph CSC::migrate(std::ifstream &file){
         int src,dst;
         float weight;
         iss>>src>>dst;
+        mapping.insert(src);
+        mapping.insert(dst);
         max_node=std::max(max_node,std::max(src,dst));
         sparseCount++;
+
         if(out_degrees.size()<=dst){
             out_degrees.resize(dst+1,0);
         }
@@ -144,6 +154,8 @@ CSgraph CSC::migrate(std::ifstream &file){
         }
         inScan[dst]++;
     }
+    numVertices=mapping.size();
+    numEdges=row_indices.size();
     return {col_offsets,row_indices,values,weighted};
 }
 
@@ -155,6 +167,7 @@ COO::COO(const std::string& path_to_file, bool is_weighted)
         return;
     }
     g = migrate(file);
+
 }
 
 CSgraph COO::migrate(std::ifstream& file) {
@@ -168,13 +181,15 @@ CSgraph COO::migrate(std::ifstream& file) {
         std::istringstream iss(line);
         int src, dst;
         float weight = 1.0f;
+
         
         if (weighted) {
             iss >> src >> dst >> weight;
         } else {
             iss >> src >> dst;
         }
-        
+        mapping.insert(src);
+        mapping.insert(dst);
         max_node = std::max(max_node, std::max(src, dst));
         edges.push_back({src, dst});
         if (weighted) {
@@ -193,19 +208,20 @@ CSgraph COO::migrate(std::ifstream& file) {
     if (weighted) {
         values = weights;
     }
-
+    numVertices=mapping.size(); 
+    numEdges=row_indices.size();
     return {row_indices, col_indices, values, weighted};
 }
 
 }  // namespace craph
 
-int main() {
-    std::string file_path = "src/graph.txt";  // Updated path
-    bool is_weighted = true;
+// int main() {
+//     std::string file_path = "src/graph.txt";  // Updated path
+//     bool is_weighted = true;
 
-    craph::CSC tr(file_path, is_weighted);
+//     craph::CSC tr(file_path, is_weighted);
 
-    tr.Print(); // Now using the inherited Print method
+//     tr.Print(); // Now using the inherited Print method
 
-    return 0;
-}
+//     return 0;
+// }

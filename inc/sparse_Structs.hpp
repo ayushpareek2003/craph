@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <set>
 
 namespace craph {
 
@@ -31,7 +32,9 @@ protected:
     std::string path_to_file;
     bool weighted;
     CSgraph g;
-    
+    int numVertices;
+    int numEdges;
+    std::set<int> mapping;
     virtual CSgraph migrate(std::ifstream& file) = 0; // Pure virtual function
 };
 
@@ -39,6 +42,7 @@ protected:
 class CSR : public SparseMatrix {
 public:
     CSR(const std::string& path_to_file, bool is_weighted = false);
+    
    
 private:
     CSgraph migrate(std::ifstream& file) override;
