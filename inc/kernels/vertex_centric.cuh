@@ -13,6 +13,16 @@ class VertexCentric_kernel{
             unsigned int current_level,
         );
 
+        __global__ static void top_down_frontiers_kernel(
+             CSR *d_csr,
+            unsigned int *level,
+            unsigned int current_level,
+            unsigned int* prevFrontier,
+            unsigned int* __lenprevFrontier,
+            unsigned int* currFrontier,
+            unsigned int* __lencurrFrontier
+        )
+
         __global__ static void bottom_up_bfs_kernel( //Also known as pull style BFS
             CSC *d_csc,
             unsigned int *level,
