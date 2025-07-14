@@ -17,8 +17,30 @@ __global__ void VertexCentric_kernel::top_down_bfs_kernel(
                 }
             }
         }
-
     }
+}
+
+__global__ void VertexCentric_kernel::bottom_up_Frontier_kernel(
+    CSR* d_csr,
+    unsigned int *level,
+    unsigned int current_level,
+    unsigned int* prevFrontier,
+    unsigned int* __lenprevFrontier,
+    unsigned int* currFrontier,
+    unsigned int* __lencurrFrontier
+){
+    unsigned int idx=blockDim.x*blockIdx.x + threadIdx.x;
+    if(idx < __lenprevFrontier){
+        unsigned int vertex=prevFrontier[idx];
+        for(int edge=d_csr.offsets[vertex];edge<d_csr.offsets[vertex+1];edge++){
+            unsigned int dst=d_csr.indices[edge];
+            if(atomicCAS(&level[dst],UINT_MAX,current_level)==UINT_MAX){
+                unsigned int __lencurrFrontier=atomicadd(__lencurrFrontier,1);
+                currFrontier[__lencurrFrontier]=dst;
+            }
+        }
+    }
+
 }
 
 __global__ void VertexCentric_kernel::bottom_up_bfs_kernel(
@@ -39,7 +61,6 @@ __global__ void VertexCentric_kernel::bottom_up_bfs_kernel(
                 }
             }
         }
-
    }
 
 }
@@ -52,6 +73,7 @@ __global__ static void optimised_approach(
             unsigned int current_level
 ){
     //implement soon
+    // intution is for the intial cases we uses top down and later bottom up
 }
 
 
