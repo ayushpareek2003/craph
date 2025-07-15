@@ -27,6 +27,11 @@ public:
     
     const CSgraph& GetGraph() const;
     void Print() const; // Common print function for all formats
+    
+    // Public accessors for CUDA kernels
+    int GetNumVertices() const { return numVertices; }
+    int GetNumEdges() const { return numEdges; }
+    const CSgraph& GetGraphData() const { return g; }
 
 protected:
     std::string path_to_file;

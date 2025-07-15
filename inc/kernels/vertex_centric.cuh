@@ -2,41 +2,56 @@
 #define vertex_centric_cuh
 
 #include <cuda_runtime.h>
-#include <../sparse_Structs.hpp>
-#define LOCAL_FRONTIER_CAPACITY 128
-class VertexCentric_kernel{
-    public:
-        __global__ static void top_down_bfs_kernel( //Also known as  push style BFS
-            CSR *d_csr,
-            unsigned int *level,
-            unsigned int* vertex_visited,
-            unsigned int current_level,
-        );
+#include <climits>
 
-        __global__ static void top_down_frontiers_kernel(
-             CSR *d_csr,
-            unsigned int *level,
-            unsigned int current_level,
-            unsigned int* prevFrontier,
-            unsigned int* __lenprevFrontier,
-            unsigned int* currFrontier,
-            unsigned int* __lencurrFrontier
-        )
+#define LOCAL_FRONTIER_CAPACITY 32
 
-        __global__ static void bottom_up_bfs_kernel( //Also known as pull style BFS
-            CSC *d_csc,
-            unsigned int *level,
-            unsigned int* vertex_visited,
-            unsigned int current_level,
-        );
-        
-        __global__ static void optimised_approach( // Optimised approach, intially top_down, then bottom_up
-            CSC *d_csc,
-            CSR *d_csr,
-            unsigned int *level,
-            unsigned int* vertex_visited,
-            unsigned int current_level,
-        );
-};
+namespace craph {
+
+// Top-down BFS kernel (push style)
+__global__ void top_down_bfs_kernel(
+    int* d_offsets,
+    int* d_indices,
+    int num_vertices,
+    unsigned int *level,
+    unsigned int* vertex_visited,
+    unsigned int current_level
+);
+
+// Top-down frontiers kernel
+__global__ void top_down_frontiers_kernel(
+    int* d_offsets,
+    int* d_indices,
+    unsigned int *level,
+    unsigned int current_level,
+    unsigned int* prevFrontier,
+    unsigned int* __lenprevFrontier,
+    unsigned int* currFrontier,
+    unsigned int* __lencurrFrontier
+);
+
+// Bottom-up BFS kernel (pull style)
+__global__ void bottom_up_bfs_kernel(
+    int* d_offsets,
+    int* d_indices,
+    int num_vertices,
+    unsigned int *level,
+    unsigned int* vertex_visited,
+    unsigned int current_level
+);
+
+// Optimized approach kernel
+__global__ void optimised_approach(
+    int* d_csc_offsets,
+    int* d_csc_indices,
+    int* d_csr_offsets,
+    int* d_csr_indices,
+    int num_vertices,
+    unsigned int *level,
+    unsigned int* vertex_visited,
+    unsigned int current_level
+);
+
+} // namespace craph
 
 #endif // vertex_centric_cuh
