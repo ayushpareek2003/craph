@@ -3,7 +3,7 @@
 
 #include <cuda_runtime.h>
 #include <../sparse_Structs.hpp>
-
+#define LOCAL_FRONTIER_CAPACITY 128
 class VertexCentric_kernel{
     public:
         __global__ static void top_down_bfs_kernel( //Also known as  push style BFS

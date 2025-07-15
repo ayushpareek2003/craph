@@ -29,16 +29,44 @@ __global__ void VertexCentric_kernel::bottom_up_Frontier_kernel(
     unsigned int* currFrontier,
     unsigned int* __lencurrFrontier
 ){
+    __shared__ unsigned int currFrontier s[LOCAL_FRONTIER_CAPACITY];
+    __shared__ unsigned int numCurrFrontier_s;
+    
+    if(threadIdx.x==0){
+        numCurrFrontier_s=0;
+    }
+
+    __syncthreads();
+
     unsigned int idx=blockDim.x*blockIdx.x + threadIdx.x;
     if(idx < __lenprevFrontier){
         unsigned int vertex=prevFrontier[idx];
         for(int edge=d_csr.offsets[vertex];edge<d_csr.offsets[vertex+1];edge++){
             unsigned int dst=d_csr.indices[edge];
             if(atomicCAS(&level[dst],UINT_MAX,current_level)==UINT_MAX){
-                unsigned int __lencurrFrontier=atomicadd(__lencurrFrontier,1);
-                currFrontier[__lencurrFrontier]=dst;
+                unsigned int currFrontierIdx_s=atomicadd(&numCurrFrontier_s,1);
+                
+                if(currFrontierIdx_s< LOCAL_FRONTIER_CAPACITY){
+                    currFrontier_s[currFrontierIdx_s]=dst;
+                }
+                else{
+                    numCurrFrontier_s=LOCAL_FRONTIER_CAPACITY;
+                    unsigned int IdxUpdate=atomicadd(&__lencurrFrontier,1);
+                    currFrontier[IdxUpdate]=dst;
+                }
             }
         }
+    }
+
+    __syncthreads();
+    unsigned int currStartIdx;
+    if(threadIdx.x==0){
+        currStartIdx= atomicadd(__lencurrFrontier,numCurrFrontier_s);
+    }
+    __syncthreads();
+    for(unsigned int fillerIdx=threadIdx.x; fillerIdx < numCurrFrontier_S ; fillerIdx+=blockDim.x){
+        unsigned int fillerIdxTemp= currStartIdx + fillerIdx;
+        currFrontier[fillerIdxTemp]=currFrontier_s[fillerIdx];
     }
 
 }

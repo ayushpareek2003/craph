@@ -1,2 +1,6 @@
 .vscode
 sparse_test
+graph.txt
+simple_test
+sparse
+.gitignore

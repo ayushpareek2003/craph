@@ -26,12 +26,12 @@ clean:
 # Help
 help:
 	@echo "Available targets:"
-	@echo "  all              - Build all test executables"
-	@echo "  simple_test      - Build simple test"
-	@echo "  comprehensive_test - Build comprehensive test"
-	@echo "  run_simple       - Run simple test"
-	@echo "  run_comprehensive - Run comprehensive test"
-	@echo "  clean            - Remove test executables"
-	@echo "  help             - Show this help"
+	@echo "  all                 - Build all test executables"
+	@echo "  simple_test         - Build simple test"
+	@echo "  comprehensive_test  - Build comprehensive test"
+	@echo "  run_simple          - Run simple test"
+	@echo "  run_comprehensive   - Run comprehensive test"
+	@echo "  clean               - Remove test executables"
+	@echo "  help                - Show this help"
 
 .PHONY: all run_simple run_comprehensive clean help 
