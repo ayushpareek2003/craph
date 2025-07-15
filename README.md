@@ -23,7 +23,7 @@ It provides flexible **edge-centric** and **vertex-centric** traversal kernels a
 - **C++17** compatible compiler (e.g., `g++`, `clang++`)
 - **CMake** (optional, for CMake build)
 
-### 📦 Build Options
+###  Build Options
 
 #### Option 1: Using Make (Recommended)
 
@@ -59,7 +59,7 @@ make
 ctest --verbose
 ```
 
-### 🧪 Running Tests
+###  Running Tests
 
 ```bash
 # CPU-only tests
@@ -105,7 +105,7 @@ std::vector<unsigned int> levels = bfs.getLevels();
 
 ---
 
-## 🛠️ Build Targets
+##  Build Targets
 
 ### Make Targets
 
