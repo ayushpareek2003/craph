@@ -1,8 +1,8 @@
 # CRAPH
 
-**CRAPH** is a lightweight C++ library for high-performance graph traversal on GPUs using CUDA.  
+CRAPH is a lightweight C++ library for high-performance graph traversal on GPUs using CUDA.  
 It provides flexible **edge-centric** and **vertex-centric** traversal kernels and modular components for sparse graph representations.
----
+
 
 ##  Features
 
