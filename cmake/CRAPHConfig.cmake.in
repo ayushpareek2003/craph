@@ -1,0 +1,10 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+# Find CUDA dependency
+find_dependency(CUDA REQUIRED)
+
+include("${CMAKE_CURRENT_LIST_DIR}/CRAPHTargets.cmake")
+
+check_required_components(CRAPH) 
