@@ -45,7 +45,7 @@ make -C tests run_cuda
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-repo/CRAPH.git
+git clone https://github.com/ayushpareek2003/craph.git
 cd CRAPH
 
 # Create build directory
